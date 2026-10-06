@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flashing Focus Detector (Fixed Timer)</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      text-align: center;
+      padding-top: 20vh;
+      margin: 0;
+      transition: background-color 0.3s;
+      background-color: #1a1a1a;
+      color: white;
+    }
+    @keyframes flash {
+      0%, 100% { background-color: #ff0000; color: white; }
+      50% { background-color: #4a0000; color: #ffcccc; }
+    }
+    .flashing {
+      animation: flash 0.35s infinite;
+    }
+    h1 { font-size: 3rem; }
+  </style>
+</head>
+<body>
+  <h1 id="message">🟢 Focused</h1>
+  <p>If you click away, it is guaranteed to flash for 3 seconds.</p>
+
+  <script>
+    const body = document.body;
+    const message = document.getElementById('message');
+    let flashTimer;
+    let isFlashing = false;
+
+    function triggerFlash() {
+      // If it is already flashing, don't restart the timer
+      if (isFlashing) return; 
+      
+      isFlashing = true;
+      body.classList.add('flashing');
+      message.innerText = '🔴 UNFOCUSED!';
+      document.title = '🔴 UNFOCUSED!';
+
+      clearTimeout(flashTimer);
+      
+      // It will now flash for exactly 3 seconds, no matter what you do
+      flashTimer = setTimeout(() => {
+        body.classList.remove('flashing');
+        message.innerText = '🟢 Focused (Flash finished)';
+        document.title = 'Flashing Focus Detector';
+        isFlashing = false;
+      }, 3000); 
+    }
+
+    // Trigger when clicking outside the window or hiding the tab
+    window.addEventListener('blur', triggerFlash);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        triggerFlash();
+      }
+    });
+    
+    // Notice: I removed the event listener that instantly stops the flash when you return!
+  </script>
+</body>
+</html>
