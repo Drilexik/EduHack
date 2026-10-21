@@ -28,6 +28,22 @@
     window.addEventListener(type, stop, true);
   }
 
+  let isPaused = false;
+  let resumeResolver = null;
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      isPaused = true;
+    } else if (e.key === ' ' && isPaused) {
+      isPaused = false;
+      if (resumeResolver) {
+        resumeResolver();
+        resumeResolver = null;
+      }
+      e.preventDefault();
+    }
+  }, true);
+
   // --- Ošetření vkládání (Paste) ---
   document.addEventListener('paste', async (e) => {
     e.stopImmediatePropagation();
@@ -39,10 +55,13 @@
     const target = document.activeElement;
     if (!target) return;
 
-    // Postupné vypisování (2 znaky za sekundu = 500 ms na 1 znak)
-    const delay = 170; 
+    const delay = 100; 
 
     for (let i = 0; i < text.length; i++) {
+      while (isPaused) {
+        await new Promise(r => { resumeResolver = r; });
+      }
+
       const char = text[i];
       
       if (typeof target.value === 'string') {
