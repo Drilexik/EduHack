@@ -40,7 +40,7 @@
     if (!target) return;
 
     // Postupné vypisování (2 znaky za sekundu = 500 ms na 1 znak)
-    const delay = 500; 
+    const delay = 170; 
 
     for (let i = 0; i < text.length; i++) {
       const char = text[i];
